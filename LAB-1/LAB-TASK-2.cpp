@@ -1,6 +1,14 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <sstream>
+
+std::string int_to_hex(int num) {
+    std::stringstream ss;
+    unsigned int abs_val = (num < 0) ? -num : num;
+    ss << std::hex << abs_val;
+    return ss.str();
+}
 
 int main() {
     // Ввод символа и вывод в символьном виде и в виде кода
@@ -9,7 +17,7 @@ int main() {
     std::cin >> ch;
     std::cout << "Символ: " << ch << " Код: " << static_cast<int>(ch) << std::endl;
 
-    // Игнорируем оставшийся символ новой строки после ввода символа
+    // Игнорируем оставшийся символ новой строки после ввода символа для корректного чтения строки
     std::cin.ignore();
 
     // Ввод строки символов (длина не менее 15, минимум два слова), определение длины и вывод с длиной
@@ -27,31 +35,33 @@ int main() {
 
     // Вывод в десятичном виде с различными форматированиями
     std::cout << "Десятичный вид (положительное):" << std::endl;
-    std::cout << std::left << std::setw(10) << pos_int << " (левый выравнивание, ширина 10)" << std::endl;
-    std::cout << std::setw(5) << pos_int << " (минимальная ширина 5)" << std::endl;
-    std::cout << std::right << std::setw(10) << pos_int << " (правый выравнивание, ширина 10)" << std::endl;
+    std::cout << std::left << std::setw(10) << pos_int << " (вывод с левой позиции поля, ширина 10)" << std::endl;
+    std::cout << std::setw(5) << pos_int << " (вывод с заданной минимальной шириной поля 5)" << std::endl;
+    std::cout << std::right << std::setw(10) << pos_int << " (вывод со смещением числа вправо, ширина 10)" << std::endl;
     std::cout << pos_int << " (без форматирования)" << std::endl;
 
     std::cout << "Десятичный вид (отрицательное):" << std::endl;
-    std::cout << std::left << std::setw(10) << neg_int << " (левый выравнивание, ширина 10)" << std::endl;
-    std::cout << std::setw(5) << neg_int << " (минимальная ширина 5)" << std::endl;
-    std::cout << std::right << std::setw(10) << neg_int << " (правый выравнивание, ширина 10)" << std::endl;
+    std::cout << std::left << std::setw(10) << neg_int << " (вывод с левой позиции поля, ширина 10)" << std::endl;
+    std::cout << std::setw(5) << neg_int << " (вывод с заданной минимальной шириной поля 5)" << std::endl;
+    std::cout << std::right << std::setw(10) << neg_int << " (вывод со смещением числа вправо, ширина 10)" << std::endl;
     std::cout << neg_int << " (без форматирования)" << std::endl;
 
-    // Вывод в шестнадцатеричном виде с различными форматированиями
+    // Вывод в шестнадцатеричном виде с различными форматированиями (с читаемым знаком для отрицательного)
     std::cout << "Шестнадцатеричный вид (положительное):" << std::endl;
-    std::cout << std::hex << std::left << std::setw(10) << pos_int << " (левый выравнивание, ширина 10)" << std::endl;
-    std::cout << std::hex << std::setw(5) << pos_int << " (минимальная ширина 5)" << std::endl;
-    std::cout << std::hex << std::right << std::setw(10) << pos_int << " (правый выравнивание, ширина 10)" << std::endl;
-    std::cout << std::hex << pos_int << " (без форматирования)" << std::endl;
+    std::string pos_hex = int_to_hex(pos_int);
+    std::cout << std::left << std::setw(10) << pos_hex << " (вывод с левой позиции поля, ширина 10)" << std::endl;
+    std::cout << std::setw(5) << pos_hex << " (вывод с заданной минимальной шириной поля 5)" << std::endl;
+    std::cout << std::right << std::setw(10) << pos_hex << " (вывод со смещением числа вправо, ширина 10)" << std::endl;
+    std::cout << pos_hex << " (без форматирования)" << std::endl;
 
     std::cout << "Шестнадцатеричный вид (отрицательное):" << std::endl;
-    std::cout << std::hex << std::left << std::setw(10) << neg_int << " (левый выравнивание, ширина 10)" << std::endl;
-    std::cout << std::hex << std::setw(5) << neg_int << " (минимальная ширина 5)" << std::endl;
-    std::cout << std::hex << std::right << std::setw(10) << neg_int << " (правый выравнивание, ширина 10)" << std::endl;
-    std::cout << std::hex << neg_int << " (без форматирования)" << std::endl;
+    std::string neg_hex = (neg_int < 0 ? "-" : "") + int_to_hex(neg_int);
+    std::cout << std::left << std::setw(10) << neg_hex << " (вывод с левой позиции поля, ширина 10)" << std::endl;
+    std::cout << std::setw(5) << neg_hex << " (вывод с заданной минимальной шириной поля 5)" << std::endl;
+    std::cout << std::right << std::setw(10) << neg_hex << " (вывод со смещением числа вправо, ширина 10)" << std::endl;
+    std::cout << neg_hex << " (без форматирования)" << std::endl;
 
-    // Возвращаем к десятичному формату
+    // Возвращаем к десятичному формату (не нужно, так как hex не применялся к cout)
     std::cout << std::dec;
 
     // Ввод двух чисел с плавающей точкой (положительного и отрицательного)

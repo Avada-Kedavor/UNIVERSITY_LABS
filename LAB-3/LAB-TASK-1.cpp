@@ -1,83 +1,106 @@
 #include <iostream>
+#include <string>
 
 template <typename T>
-class Array {
+class DynamicArray {
 private:
     T* data;
-    int n;
+    int size;
 
 public:
-    // Constructor with input
-    Array(int size) : n(size) {
-        data = new T[n];
-        std::cout << "Enter " << n << " elements:" << std::endl;
-        for (int i = 0; i < n; ++i) {
-            std::cin >> data[i];
+    // Конструктор по умолчанию
+    DynamicArray(int n = 0) : size(n), data(n > 0 ? new T[n] : nullptr) {}
+
+    // Конструктор: принимает размер N и указатель на массив для копирования
+    DynamicArray(int n, const T* arr) : size(n), data(n > 0 ? new T[n] : nullptr) {
+        for (int i = 0; i < size; ++i) {
+            data[i] = arr[i];
         }
     }
 
-    // Constructor from existing data
-    Array(T* src, int size) : n(size) {
-        data = new T[n];
-        for (int i = 0; i < n; ++i) {
-            data[i] = src[i];
-        }
-    }
-
-    // Copy constructor
-    Array(const Array& other) : n(other.n) {
-        data = new T[n];
-        for (int i = 0; i < n; ++i) {
+    // Копирующий конструктор
+    DynamicArray(const DynamicArray& other) : size(other.size), data(other.size > 0 ? new T[other.size] : nullptr) {
+        for (int i = 0; i < size; ++i) {
             data[i] = other.data[i];
         }
     }
 
-    // Destructor
-    ~Array() {
+    // Оператор присваивания
+    DynamicArray& operator=(const DynamicArray& other) {
+        if (this == &other) return *this;
+        delete[] data;
+        size = other.size;
+        data = size > 0 ? new T[size] : nullptr;
+        for (int i = 0; i < size; ++i) {
+            data[i] = other.data[i];
+        }
+        return *this;
+    }
+
+    // Деструктор
+    ~DynamicArray() {
         delete[] data;
     }
 
-    // Method to view the array
-    void view() {
-        std::cout << "Array elements: ";
-        for (int i = 0; i < n; ++i) {
+    // Оператор доступа
+    T& operator[](int i) { return data[i]; }
+    const T& operator[](int i) const { return data[i]; }
+
+    // Метод просмотра значений массива
+    void print() const {
+        for (int i = 0; i < size; ++i) {
             std::cout << data[i] << " ";
         }
         std::cout << std::endl;
     }
 
-    // Method to form cumulative sum array
-    Array<T> formCumulative() {
-        T* cum = new T[n];
-        T sum = T();  // Default initialization (assumes T can be zero-initialized)
-        for (int i = 0; i < n; ++i) {
+    // Метод для формирования нового массива с кумулятивными суммами
+    template <typename R = T>
+    DynamicArray<R> cumulativeSum() const {
+        DynamicArray<R> result(size);
+        R sum = R();
+        for (int i = 0; i < size; ++i) {
             sum += data[i];
-            cum[i] = sum;
+            result[i] = sum;
         }
-        Array<T> newArray(cum, n);
-        delete[] cum;
-        return newArray;
+        return result;
     }
 };
 
 int main() {
-    int N;
-    std::cout << "Enter N: ";
-    std::cin >> N;
+    // Пример использования с целыми числами
+    int n = 5;
+    int arr[] = {1, 2, 3, 4, 5};
+    DynamicArray<int> original(n, arr);
+    
+    std::cout << "Исходный массив: ";
+    original.print();
+    
+    DynamicArray<int> cumSum = original.cumulativeSum();
+    std::cout << "Массив кумулятивных сумм: ";
+    cumSum.print();
 
-    // Example with int
-    Array<int> arrInt(N);
-    arrInt.view();
-    Array<int> cumInt = arrInt.formCumulative();
-    std::cout << "Cumulative sums (int): ";
-    cumInt.view();
+    // Пример с вещественными числами
+    double darr[] = {1.1, 2.2, 3.3, 4.4, 5.5};
+    DynamicArray<double> doriginal(n, darr);
+    
+    std::cout << "Исходный массив вещественных чисел: ";
+    doriginal.print();
+    
+    DynamicArray<double> dcumSum = doriginal.cumulativeSum();
+    std::cout << "Массив кумулятивных сумм вещественных чисел: ";
+    dcumSum.print();
 
-    // Example with double
-    Array<double> arrDouble(N);
-    arrDouble.view();
-    Array<double> cumDouble = arrDouble.formCumulative();
-    std::cout << "Cumulative sums (double): ";
-    cumDouble.view();
+    // Пример с символами (char), где + будет конкатенацией в строки
+    char carr[] = {'a', 'b', 'c', 'd', 'e'};
+    DynamicArray<char> coriginal(n, carr);
+    
+    std::cout << "Исходный массив символов: ";
+    coriginal.print();
+    
+    DynamicArray<std::string> ccumSum = coriginal.cumulativeSum<std::string>();
+    std::cout << "Массив кумулятивных сумм символов: ";
+    ccumSum.print();
 
     return 0;
 }
